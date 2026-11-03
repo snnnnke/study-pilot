@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f6fb">
+  <meta name="description" content="学伴 —— 上传 PDF、PPT、Word、视频等学习资料，由 AI 生成 PDF 学习报告。">
+  <title>学伴 · AI 学习资料总结</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%234f6ef7'/%3E%3Cpath d='M11 7.2C9.7 6.2 8.2 5.7 6.3 5.7H4.5v10.3h1.8c1.9 0 3.4.5 4.7 1.5 1.3-1 2.8-1.5 4.7-1.5h1.8V5.7h-1.8c-1.9 0-3.4.5-4.7 1.5Z' fill='none' stroke='white' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M11 7.2v10.3' fill='none' stroke='white' stroke-width='1.6'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 6.6C9.6 5.5 7.8 4.9 5.6 4.9H3.4v12.9h2.2c2.2 0 4 .6 5.4 1.7 1.4-1.1 3.2-1.7 5.4-1.7h2.2V4.9h-2.2c-2.2 0-4 .6-5.4 1.7Z"/>
+              <path d="M11 6.6v12.9"/>
+              <path d="M20.1 2.4l.55 1.4 1.4.55-1.4.55-.55 1.4-.55-1.4-1.4-.55 1.4-.55.55-1.4Z" fill="currentColor" stroke="none"/>
+            </svg>
+          </span>
+          <span class="brand-copy">
+            <span class="brand-name">学伴</span>
+            <span class="brand-sub">AI 学习资料总结</span>
+          </span>
+        </div>
+        <div class="topbar-actions">
+          <button type="button" class="btn btn-ghost" id="btnHistory" aria-haspopup="dialog" aria-controls="historyDrawer" aria-label="打开历史记录">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/>
+              <path d="M3.5 4.5v4.2h4.2"/>
+              <path d="M12 7.8V12l2.9 1.9"/>
+            </svg>
+            <span class="btn-text">历史记录</span>
+          </button>
+          <button type="button" class="btn btn-ghost" id="btnSettings" aria-haspopup="dialog" aria-controls="settingsModal" aria-label="打开设置">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M18.5 5.5l-1.7 1.7M7.2 16.8l-1.7 1.7"/>
+            </svg>
+            <span class="btn-text">设置</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main" id="main">
+      <!-- 首次使用引导 -->
+      <section class="guide-banner" id="guideBanner" hidden aria-label="首次使用引导">
+        <span class="guide-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="8.3" cy="15.7" r="3.6"/>
+            <path d="m10.9 13.1 8.5-8.5"/>
+            <path d="m16.6 4.9 2.4 2.4"/>
+            <path d="m14.1 7.4 2.4 2.4"/>
+          </svg>
+        </span>
+        <div class="guide-text">
+          <strong>首次使用请先配置 AI 接口</strong>
+          <span>填写服务商、接口地址与 API Key，即可开始生成学习报告。</span>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm" id="btnGuideSettings">去配置</button>
+      </section>
+
+      <!-- 上传区 -->
+      <section class="panel upload-panel" aria-labelledby="uploadTitle">
+        <div class="panel-head">
+          <div>
+            <h2 id="uploadTitle">上传学习资料</h2>
+            <p>AI 会自动解析内容，整理成条理清晰的学习报告</p>
+          </div>
+          <span class="panel-chip">支持多文件</span>
+        </div>
+
+        <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-describedby="dzHint">
+          <input type="file" id="fileInput" class="visually-hidden" multiple
+                 accept=".pdf,.ppt,.pptx,.doc,.docx,.txt,.md,.xlsx,.xls,.mp4,.mkv,.mov,.avi,.webm,.mp3,.wav,.m4a,.flac,.ogg">
+          <span class="dz-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 15.5V4.5"/>
+              <path d="m7.8 8.7 4.2-4.2 4.2 4.2"/>
+              <path d="M4.5 14.5v3.6a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3.6"/>
+            </svg>
+          </span>
+          <p class="dz-title">拖拽学习资料到这里，或点击选择文件</p>
+          <p class="dz-hint" id="dzHint">支持 PDF、PPT、Word、TXT、Markdown、Excel、视频与音频，可一次选择多个</p>
+          <span class="dz-formats">PDF · PPTX · DOCX · XLSX · MP4 · MKV · MP3 · WAV · M4A</span>
+        </div>
+
+        <div class="file-summary" id="fileSummary" hidden>
+          <span class="file-summary-count" id="fileCount">0 个文件</span>
+          <button type="button" class="link-btn" id="btnClearFiles">清空列表</button>
+        </div>
+        <ul class="file-list" id="fileList" aria-label="待生成的文件列表"></ul>
+      </section>
+
+      <!-- 报告档位 -->
+      <section class="panel profile-panel" aria-labelledby="profileTitle">
+        <div class="panel-head">
+          <div>
+            <h2 id="profileTitle">报告档位</h2>
+            <p>档位越高，内容越深入，生成时间也越长</p>
+          </div>
+        </div>
+        <div class="profile-grid" role="radiogroup" aria-labelledby="profileTitle">
+          <label class="profile-card" data-profile="quick">
+            <input type="radio" name="profile" value="quick">
+            <span class="profile-check" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.2 4.2L19 6.6"/></svg>
+            </span>
+            <span class="profile-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13.2 2.8 5.6 13.2h5.3l-.7 8 7.6-10.4h-5.3l.7-8Z"/></svg>
+            </span>
+            <span class="profile-name">快速</span>
+            <span class="profile-desc">约 3 分钟，费用最低，适合快速浏览。</span>
+            <span class="profile-meta">~3 分钟 · 低成本</span>
+          </label>
+          <label class="profile-card" data-profile="standard">
+            <input type="radio" name="profile" value="standard" checked>
+            <span class="profile-check" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.2 4.2L19 6.6"/></svg>
+            </span>
+            <span class="profile-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5c2.7 0 5.3.9 8 2.7 2.7-1.8 5.3-2.7 8-2.7v13c-2.7 0-5.3.9-8 2.7-2.7-1.8-5.3-2.7-8-2.7v-13Z"/><path d="M12 8.2v13"/></svg>
+            </span>
+            <span class="profile-name">标准<span class="profile-recommend">推荐</span></span>
+            <span class="profile-desc">约 8 分钟，平衡深度与成本，适合系统复习。</span>
+            <span class="profile-meta">~8 分钟 · 推荐</span>
+          </label>
+          <label class="profile-card" data-profile="deep">
+            <input type="radio" name="profile" value="deep">
+            <span class="profile-check" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.2 4.2L19 6.6"/></svg>
+            </span>
+            <span class="profile-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3.5 8 4.2-8 4.2-8-4.2 8-4.2Z"/><path d="m4 12 8 4.2 8-4.2"/><path d="m4 16.3 8 4.2 8-4.2"/></svg>
+            </span>
+            <span class="profile-name">深度</span>
+            <span class="profile-desc">约 20 分钟，最详细，包含自测题与延伸阅读。</span>
+            <span class="profile-meta">~20 分钟 · 最详细</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- 开始生成 -->
+      <div class="action-row">
+        <button type="button" class="btn btn-primary btn-lg" id="btnStart" disabled>
+          <span class="btn-spinner" hidden aria-hidden="true"></span>
+          <span class="btn-label">开始生成</span>
+        </button>
+        <p class="action-hint" id="actionHint">请先添加学习资料</p>
+      </div>
+
+      <!-- 生成进度 -->
+      <section class="panel progress-panel" id="progressPanel" hidden aria-labelledby="progressTitle">
+        <div class="progress-head">
+          <div>
+            <h2 id="progressTitle">正在生成学习报告</h2>
+            <p class="progress-files" id="progressFiles"></p>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm" id="btnCancel">
+            <span class="btn-spinner" hidden aria-hidden="true"></span>
+            <span class="btn-label">取消</span>
+          </button>
+        </div>
+        <ol class="stepper" id="stepper">
+          <li class="step" data-step="1">
+            <span class="step-dot">1</span>
+            <span class="step-text">解析资料</span>
+          </li>
+          <li class="step" data-step="2">
+            <span class="step-dot">2</span>
+            <span class="step-text">语音转写</span>
+          </li>
+          <li class="step" data-step="3">
+            <span class="step-dot">3</span>
+            <span class="step-text">AI 提炼</span>
+          </li>
+          <li class="step" data-step="4">
+            <span class="step-dot">4</span>
+            <span class="step-text">排版生成</span>
+          </li>
+        </ol>
+        <div class="progress-track" id="progressTrack" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="生成进度">
+          <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+        <div class="progress-foot">
+          <p class="progress-message" id="progressMessage">准备中…</p>
+          <span class="progress-percent" id="progressPercent">0%</span>
+        </div>
+        <p class="progress-note">生成过程中请保持页面开启，你可以随时取消本次任务。</p>
+      </section>
+
+      <!-- 生成成功 -->
+      <section class="panel result-panel" id="resultPanel" hidden aria-labelledby="resultTitle">
+        <div class="result-head">
+          <span class="result-badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.2 4.2L19 6.6"/></svg>
+          </span>
+          <div>
+            <h2 id="resultTitle">学习报告已生成</h2>
+            <p class="result-meta" id="resultMeta"></p>
+          </div>
+        </div>
+        <div class="pdf-frame">
+          <iframe id="pdfFrame" title="学习报告 PDF 预览" src="about:blank" loading="lazy"></iframe>
+        </div>
+        <div class="result-actions">
+          <a class="btn btn-primary" id="btnDownload" href="#" download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7.5 10.7 4.5 4.5 4.5-4.5"/><path d="M5 19.5h14"/></svg>
+            <span class="btn-label">下载 PDF</span>
+          </a>
+          <button type="button" class="btn btn-secondary" id="btnAgain">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4.8v4.4h-4.4"/></svg>
+            <span class="btn-label">再生成一份</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 生成失败 -->
+      <section class="panel error-panel" id="errorPanel" hidden aria-labelledby="errorTitle">
+        <span class="error-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.7 21.2 20H2.8L12 3.7Z"/><path d="M12 9.5v5"/><circle cx="12" cy="17.2" r="1.05" fill="currentColor" stroke="none"/></svg>
+        </span>
+        <h2 id="errorTitle">生成失败</h2>
+        <p class="error-text" id="errorText"></p>
+        <div class="error-actions">
+          <button type="button" class="btn btn-primary" id="btnRetry">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4.8v4.4h-4.4"/></svg>
+            <span class="btn-label">重试</span>
+          </button>
+          <button type="button" class="btn btn-ghost" id="btnBack">返回修改</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span id="footerVersion">学伴 v1.0.0 · 本地运行</span>
+      <span class="footer-sep">·</span>
+      <span>所有数据仅保存在本机</span>
+    </footer>
+  </div>
+
+  <!-- 设置弹窗 -->
+  <div class="overlay" id="settingsModal" hidden>
+    <div class="overlay-backdrop" data-close-settings></div>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" tabindex="-1">
+      <header class="modal-head">
+        <div>
+          <h2 id="settingsTitle">设置</h2>
+          <p>配置 AI 接口与语音转写参数</p>
+        </div>
+        <button type="button" class="icon-btn" id="btnCloseSettings" aria-label="关闭设置">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </header>
+      <div class="modal-body">
+        <section class="form-section" aria-labelledby="aiSectionTitle">
+          <div class="section-head">
+            <h3 id="aiSectionTitle">AI 配置</h3>
+            <p>用于提炼知识点与撰写报告，需兼容 OpenAI 接口协议</p>
+          </div>
+          <div class="fields">
+            <label class="field" for="setProvider">
+              <span class="field-label">服务商</span>
+              <select class="input" id="setProvider"></select>
+              <span class="field-hint" id="providerHint">选择预设服务商可自动填入接口地址与模型</span>
+            </label>
+            <label class="field" for="setBaseUrl">
+              <span class="field-label">接口地址（Base URL）</span>
+              <input class="input" id="setBaseUrl" type="url" spellcheck="false" autocomplete="off" placeholder="https://api.deepseek.com/v1">
+              <span class="field-hint">以 /v1 结尾的 OpenAI 兼容接口地址</span>
+            </label>
+            <label class="field" for="setModel">
+              <span class="field-label">模型</span>
+              <input class="input" id="setModel" type="text" spellcheck="false" autocomplete="off" list="modelOptions" placeholder="deepseek-chat">
+              <datalist id="modelOptions"></datalist>
+              <span class="field-hint">可从下拉建议中选择，也可手动输入模型名</span>
+            </label>
+            <label class="field" for="setApiKey">
+              <span class="field-label">API Key</span>
+              <input class="input" id="setApiKey" type="password" spellcheck="false" autocomplete="new-password" placeholder="请输入 API Key">
+              <span class="field-hint" id="apiKeyState">尚未配置</span>
+            </label>
+            <div class="field">
+              <div class="field-head">
+                <label class="field-label" for="setTemp">温度（temperature）</label>
+                <span class="temp-value" id="tempValue">0.3</span>
+              </div>
+              <input class="range" id="setTemp" type="range" min="0" max="1" step="0.1" value="0.3" aria-describedby="tempHint">
+              <span class="field-hint" id="tempHint">数值越低越严谨，越高越发散；学习总结建议 0.2–0.4</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section" aria-labelledby="asrSectionTitle">
+          <div class="section-head">
+            <h3 id="asrSectionTitle">语音转写</h3>
+            <p>用于视频、音频与录音内容的语音识别</p>
+          </div>
+          <div class="fields-3">
+            <label class="field" for="setAsrModel">
+              <span class="field-label">模型大小</span>
+              <select class="input" id="setAsrModel">
+                <option value="tiny">tiny · 约 75 MB，速度最快，精度一般</option>
+                <option value="base">base · 约 145 MB，速度较快，适合清晰录音</option>
+                <option value="small">small · 约 466 MB，速度与精度均衡（推荐）</option>
+                <option value="medium">medium · 约 1.5 GB，精度较高，速度较慢</option>
+                <option value="large-v3">large-v3 · 约 3.1 GB，精度最高，需要较好显卡</option>
+              </select>
+            </label>
+            <label class="field" for="setAsrDevice">
+              <span class="field-label">运行设备</span>
+              <select class="input" id="setAsrDevice">
+                <option value="auto">auto · 自动选择</option>
+                <option value="cpu">cpu · 仅使用 CPU</option>
+                <option value="cuda">cuda · GPU 加速（CUDA）</option>
+              </select>
+            </label>
+            <label class="field" for="setAsrLanguage">
+              <span class="field-label">识别语言</span>
+              <select class="input" id="setAsrLanguage">
+                <option value="auto">auto · 自动识别</option>
+                <option value="zh">zh · 中文</option>
+                <option value="en">en · 英文</option>
+              </select>
+            </label>
+          </div>
+          <label class="field" for="setAsrPath" style="margin-top:14px">
+            <span class="field-label">本地模型目录（可选）</span>
+            <input class="input" id="setAsrPath" type="text" placeholder="留空则按模型大小自动下载；可填入 fetch_model.py 下载的目录" autocomplete="off" spellcheck="false">
+          </label>
+          <p class="field-hint">模型越大识别越准确，但会占用更多内存与时间；首次使用会自动下载模型文件。</p>
+        </section>
+      </div>
+      <footer class="modal-foot">
+        <div class="foot-left">
+          <button type="button" class="btn btn-secondary" id="btnTest">
+            <span class="btn-spinner" hidden aria-hidden="true"></span>
+            <span class="btn-label">测试连接</span>
+          </button>
+          <div class="test-result" id="testResult" role="status" hidden></div>
+        </div>
+        <div class="foot-right">
+          <button type="button" class="btn btn-ghost" id="btnCancelSettings">取消</button>
+          <button type="button" class="btn btn-primary" id="btnSave">
+            <span class="btn-spinner" hidden aria-hidden="true"></span>
+            <span class="btn-label">保存设置</span>
+          </button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- 自定义确认弹窗 -->
+  <div class="overlay" id="confirmModal" hidden>
+    <div class="overlay-backdrop" data-confirm-cancel></div>
+    <div class="modal modal-sm" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMessage" tabindex="-1">
+      <h2 class="confirm-title" id="confirmTitle">确认操作</h2>
+      <p class="confirm-message" id="confirmMessage"></p>
+      <div class="confirm-actions">
+        <button type="button" class="btn btn-ghost" id="confirmCancel">取消</button>
+        <button type="button" class="btn btn-danger" id="confirmOk">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 历史记录抽屉 -->
+  <div class="overlay drawer-overlay" id="historyDrawer" hidden>
+    <div class="overlay-backdrop" data-close-history></div>
+    <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="historyTitle" tabindex="-1">
+      <header class="drawer-head">
+        <div>
+          <h2 id="historyTitle">历史记录</h2>
+          <p>最近 20 条生成任务</p>
+        </div>
+        <div class="drawer-head-actions">
+          <button type="button" class="icon-btn" id="btnRefreshHistory" aria-label="刷新历史记录" title="刷新">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4.8v4.4h-4.4"/></svg>
+          </button>
+          <button type="button" class="icon-btn" id="btnCloseHistory" aria-label="关闭历史记录">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+      </header>
+      <div class="drawer-body" id="historyBody">
+        <div class="history-loading" id="historyLoading">
+          <span class="btn-spinner" aria-hidden="true"></span>
+          <span>正在加载…</span>
+        </div>
+        <div class="empty-state" id="historyEmpty" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 7.5h16v12.2a1.8 1.8 0 0 1-1.8 1.8H5.8A1.8 1.8 0 0 1 4 19.7V7.5Z"/>
+            <path d="M3 4h18v3.5H3z"/>
+            <path d="M10 12.5h4"/>
+          </svg>
+          <p class="empty-title" id="historyEmptyText">还没有生成记录</p>
+          <p class="empty-sub">上传学习资料，生成你的第一份学习报告。</p>
+        </div>
+        <ul class="history-list" id="historyList"></ul>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Toast 容器 -->
+  <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
+
+  <noscript>
+    <div class="noscript">学伴需要启用 JavaScript 才能运行，请在浏览器设置中开启后刷新页面。</div>
+  </noscript>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+# 运行时数据与构建产物
+.venv/
+.uv-cache/
+.uv-python/
+.data/
+testhome/
+build/
+dist/
+*.spec.bak
+StudyPilot-win64.zip
+
+# 测试资料（避免公开课程资料的版权问题）
+docs/*.pdf
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# 编辑器
+.idea/
+.vscode/
+*.swp
+.DS_Store
