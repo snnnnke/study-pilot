@@ -30,7 +30,7 @@
 需要 Python 3.11 / 3.12。
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/snnnnke/study-pilot
 cd study-pilot
 
 # 创建虚拟环境
